@@ -45,4 +45,4 @@ dataset.derive_indicators()
 
 dataset.get_data().tail()
 
-dataset.visualize(columns=['Close', 'MA50', 'MA250'])
+dataset.visualize(columns=['Close', 'MA50', 'MA200'])

@@ -23,12 +23,25 @@ class Dataset(object):
         self.__data['MA100'] = abstract.SMA(input_arrays, timeperiod=100)
         self.__data['MA200'] = abstract.SMA(input_arrays, timeperiod=200)
         self.__data['MA250'] = abstract.SMA(input_arrays, timeperiod=250)
+
+
+        self.__data['RSI10'] = abstract.RSI(input_arrays, timeperiod=10)
+        self.__data['RSI20'] = abstract.RSI(input_arrays, timeperiod=20)
+        self.__data['RSI30'] = abstract.RSI(input_arrays, timeperiod=30)
+        self.__data['RSI50'] = abstract.RSI(input_arrays, timeperiod=50)
+        self.__data['RSI100'] = abstract.RSI(input_arrays, timeperiod=100)
+        self.__data['RSI200'] = abstract.RSI(input_arrays, timeperiod=200)
+        self.__data['RSI250'] = abstract.RSI(input_arrays, timeperiod=250)
         
+        self.__data['OBV'] = abstract.OBV(input_arrays)
+        
+
     def visualize(self, columns):
         import matplotlib.pyplot as plt
 
         self.__data[columns].plot()
         plt.show()
+
 
 
 
