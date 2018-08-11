@@ -7,6 +7,20 @@ class Dataset(object):
     def get_data(self):
         return self.__data
 
+    def get_return(self, no_of_steps = 1):
+        if no_of_steps < 1:
+            return self.__data['Close'].pct_change(1)
+        else:
+            return self.__data['Close'].pct_change(no_of_steps)
+
+    def get_return_dummy(self, no_of_steps = 1):
+        import numpy as np
+        if no_of_steps < 1:
+            return np.sign(self.__data['Close'].pct_change(1))
+        else:
+            return np.sign(self.__data['Close'].pct_change(no_of_steps))
+
+
 
     def MA(self, window_size):
         from talib import abstract
@@ -117,8 +131,16 @@ class Dataset(object):
         return ((slowk - slowd) - 50) / 50
 
 
+    def data_cleaning(self):
+        self.__data.dropna(inplace=True)
 
-    def derive_features(self):
+
+
+    def derive_features(self, no_of_steps = 1):
+        self.__data['Return'] = self.get_return(no_of_steps)
+        self.__data['ReturnDummy'] = self.get_return_dummy(no_of_steps)
+
+        
         self.__data['MA10'] = self.tran_MA(10)
         self.__data['MA20'] = self.tran_MA(20)
         self.__data['MA30'] = self.tran_MA(30)
@@ -142,14 +164,12 @@ class Dataset(object):
         self.__data['STOCHKD30'] = self.tran_STOCH_KD(window_size_k = 30, window_size_d = 5)
 
         
-        
 
     def visualize(self, columns):
         import matplotlib.pyplot as plt
 
         self.__data[columns].plot()
         plt.show()
-
 
     def talib2df(self, talib_output):
         import pandas as pd

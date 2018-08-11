@@ -51,11 +51,11 @@ dataset.get_data().head()
 
 
 
-dataset.derive_features()
+dataset.derive_features(no_of_steps = 1)
 
-dataset.get_data().tail()
 
-dataset.get_data()
+
+#dataset.get_data()
 
 #upperband, middleband, lowerband = dataset.BB(10)
 
@@ -89,3 +89,12 @@ dataset.get_data()
 #dataset.get_data()['STOCHKD30'].plot(secondary_y=True)
 
 #plt.show()
+
+
+dataset.data_cleaning()
+
+dataset.get_data().tail()
+
+dataset.get_data().head()['ReturnDummy'].unique()
+
+dataset.get_data().head()
