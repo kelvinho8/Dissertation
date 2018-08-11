@@ -98,3 +98,10 @@ dataset.get_data().tail()
 dataset.get_data().head()['ReturnDummy'].unique()
 
 dataset.get_data().head()
+
+dataset.data_splitting(train_start = '2008-01-01', train_end = '2008-12-31', test_start = '2009-01-01', test_end = '2009-12-31')
+
+dataset.get_trainset()
+
+dataset.get_testset()
+

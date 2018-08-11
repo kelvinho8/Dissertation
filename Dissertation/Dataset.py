@@ -7,6 +7,13 @@ class Dataset(object):
     def get_data(self):
         return self.__data
 
+    def get_trainset(self):
+        return self.__trainset
+
+    def get_testset(self):
+        return self.__testset
+
+
     def get_return(self, no_of_steps = 1):
         if no_of_steps < 1:
             return self.__data['Close'].pct_change(1)
@@ -133,6 +140,15 @@ class Dataset(object):
 
     def data_cleaning(self):
         self.__data.dropna(inplace=True)
+
+
+    def data_splitting(self, train_start, train_end, test_start, test_end):
+        self.__trainset = self.__data[train_start:train_end]
+        self.__testset = self.__data[test_start:test_end]
+
+        #self.__trainset = self.__data[self.__data.index >= train_start and self.__data.index <= train_end]
+        #self.__testset = self.__data[self.__data.index >= test_start and self.__data.index <= test_end]
+
 
 
 
