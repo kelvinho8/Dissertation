@@ -1,31 +1,32 @@
 class Dataset(object):
-    def __init__(self, data, no_of_intervals_per_day):
-        self.__data = data
-        self.__no_of_intervals_per_day = no_of_intervals_per_day
+    def __init__(self, data, no_of_intervals_per_day, no_of_steps):
+        self.data = data
+        self.no_of_intervals_per_day = no_of_intervals_per_day
+
+        if no_of_steps < 1:
+            self.no_of_steps = 1
+        else:
+            self.no_of_steps = no_of_steps
+
+
 
 
     def get_data(self):
-        return self.__data
-
-    def get_trainset(self):
-        return self.__trainset
-
-    def get_testset(self):
-        return self.__testset
+        return self.data
 
 
-    def get_return(self, no_of_steps = 1):
-        if no_of_steps < 1:
-            return self.__data['Close'].pct_change(1)
-        else:
-            return self.__data['Close'].pct_change(no_of_steps)
 
-    def get_return_dummy(self, no_of_steps = 1):
+    def get_no_of_steps(self):
+        return self.no_of_steps
+
+
+
+    def get_return(self):
+        return self.data['Close'].pct_change(self.no_of_steps)
+
+    def get_return_dummy(self):
         import numpy as np
-        if no_of_steps < 1:
-            return np.sign(self.__data['Close'].pct_change(1))
-        else:
-            return np.sign(self.__data['Close'].pct_change(no_of_steps))
+        return np.sign(self.data['Close'].pct_change(self.no_of_steps))
 
 
 
@@ -33,18 +34,18 @@ class Dataset(object):
         from talib import abstract
 
         input_arrays = {
-            'open': self.__data['Open'].values,
-            'high': self.__data['High'].values,
-            'low': self.__data['Low'].values,
-            'close': self.__data['Close'].values,
-            'volume': self.__data['Volume'].values
+            'open': self.data['Open'].values,
+            'high': self.data['High'].values,
+            'low': self.data['Low'].values,
+            'close': self.data['Close'].values,
+            'volume': self.data['Volume'].values
         }
 
-        return abstract.SMA(input_arrays, timeperiod=window_size * self.__no_of_intervals_per_day)
+        return abstract.SMA(input_arrays, timeperiod=window_size * self.no_of_intervals_per_day)
 
 
     def tran_MA(self, window_size):
-        close = self.__data['Close'].values
+        close = self.data['Close'].values
         ma = self.MA(window_size)
 
         return (close - ma) / ma
@@ -55,11 +56,11 @@ class Dataset(object):
         from talib import abstract
 
         input_arrays = {
-            'open': self.__data['Open'].values,
-            'high': self.__data['High'].values,
-            'low': self.__data['Low'].values,
-            'close': self.__data['Close'].values,
-            'volume': self.__data['Volume'].values
+            'open': self.data['Open'].values,
+            'high': self.data['High'].values,
+            'low': self.data['Low'].values,
+            'close': self.data['Close'].values,
+            'volume': self.data['Volume'].values
         }
 
         return abstract.BBANDS(input_arrays, timeperiod=window_size, nbdevup=2, nbdevdn=2, matype=0)
@@ -68,7 +69,7 @@ class Dataset(object):
     def tran_BB(self, window_size):
         import numpy as np
 
-        close = self.__data['Close'].values
+        close = self.data['Close'].values
         upperband, middleband, lowerband = self.BB(window_size)
 
         bb_feature = []
@@ -90,19 +91,19 @@ class Dataset(object):
         from talib import abstract
 
         input_arrays = {
-            'open': self.__data['Open'].values,
-            'high': self.__data['High'].values,
-            'low': self.__data['Low'].values,
-            'close': self.__data['Close'].values,
-            'volume': self.__data['Volume'].values
+            'open': self.data['Open'].values,
+            'high': self.data['High'].values,
+            'low': self.data['Low'].values,
+            'close': self.data['Close'].values,
+            'volume': self.data['Volume'].values
         }
 
-        return abstract.RSI(input_arrays, timeperiod=window_size * self.__no_of_intervals_per_day)
+        return abstract.RSI(input_arrays, timeperiod=window_size * self.no_of_intervals_per_day)
 
 
 
     def tran_RSI(self, window_size):
-        close = self.__data['Close'].values
+        close = self.data['Close'].values
         rsi = self.RSI(window_size)
 
         return (rsi - 50) / 50
@@ -112,16 +113,16 @@ class Dataset(object):
         from talib import abstract
 
         input_arrays = {
-            'open': self.__data['Open'].values,
-            'high': self.__data['High'].values,
-            'low': self.__data['Low'].values,
-            'close': self.__data['Close'].values,
-            'volume': self.__data['Volume'].values
+            'open': self.data['Open'].values,
+            'high': self.data['High'].values,
+            'low': self.data['Low'].values,
+            'close': self.data['Close'].values,
+            'volume': self.data['Volume'].values
         }
             
         #slowk, slowd = STOCH(high, low, close, fastk_period=5, slowk_period=3, slowk_matype=0, slowd_period=3, slowd_matype=0)
 
-        return abstract.STOCH(input_arrays, fastk_period=window_size_k * self.__no_of_intervals_per_day, slowk_period=window_size_d * self.__no_of_intervals_per_day, slowk_matype=0, slowd_period=window_size_d * self.__no_of_intervals_per_day, slowd_matype=0)
+        return abstract.STOCH(input_arrays, fastk_period=window_size_k * self.no_of_intervals_per_day, slowk_period=window_size_d * self.no_of_intervals_per_day, slowk_matype=0, slowd_period=window_size_d * self.no_of_intervals_per_day, slowd_matype=0)
     
 
 
@@ -138,53 +139,127 @@ class Dataset(object):
         return ((slowk - slowd) - 50) / 50
 
 
-    def data_cleaning(self):
-        self.__data.dropna(inplace=True)
+    def remove_na(self):
+        self.data.dropna(inplace=True)
+
+    def interpolate(self, method = 'linear'):
+        self.data.interpolate(method, inplace = True)
 
 
     def data_splitting(self, train_start, train_end, test_start, test_end):
-        self.__trainset = self.__data[train_start:train_end]
-        self.__testset = self.__data[test_start:test_end]
+        self.train = self.data[train_start:train_end]
+        self.test = self.data[test_start:test_end]
 
-        #self.__trainset = self.__data[self.__data.index >= train_start and self.__data.index <= train_end]
-        #self.__testset = self.__data[self.__data.index >= test_start and self.__data.index <= test_end]
+    def get_train(self):
+        return self.train
+
+    def get_test(self):
+        return self.test
+
+    def avoid_look_ahead_bias(self):
+        self.train = self.train[1:-self.no_of_steps]
+
+
+    def set_X(self, features):
+        self.X = features
+
+    def set_y(self, feature):
+        self.y = feature
+
+    def get_X(self):
+        return self.X
+
+    def get_y(self):
+        return self.y
+
+    def set_X_train(self):
+        self.X_train = self.train[self.X]
+
+    def set_y_train(self):
+        self.y_train = self.train[self.y]
+
+    def set_X_test(self):
+        self.X_test = self.test[self.X]
+
+    def set_y_test(self):
+        self.y_test = self.test[self.y]
+
+
+
+    def get_X_train(self):
+        return self.X_train
+
+    def get_y_train(self):
+        return self.y_train
+    
+    def get_X_test(self):
+        return self.X_test
+
+    def get_y_test(self):
+        return self.y_test
+
+
+    def normalization(self):
+        from sklearn import preprocessing
+        import pandas as pd
+
+        scaler = preprocessing.StandardScaler().fit(self.X_train)
+
+        self.X_train = pd.DataFrame(data = scaler.transform(self.X_train), columns = self.X, index = self.train.index)
+        self.X_test =  pd.DataFrame(data = scaler.transform(self.X_test), columns = self.X, index = self.test.index)
+
+
+
+    def dimension_reduction(self, n_components=2):
+        from sklearn.decomposition import PCA
+        import pandas as pd
+        import numpy as np
+
+        pca = PCA(n_components, svd_solver='full')
+        pca.fit(self.X_train)
+        print(pca.explained_variance_)
+        print(pca.explained_variance_ratio_)
+        print(np.sum(pca.explained_variance_ratio_))
+
+        self.X_train = pd.DataFrame(data = pca.transform(self.X_train), index = self.train.index)
+        self.X_test =  pd.DataFrame(data = pca.transform(self.X_test), index = self.test.index)
 
 
 
 
-    def derive_features(self, no_of_steps = 1):
-        self.__data['Return'] = self.get_return(no_of_steps)
-        self.__data['ReturnDummy'] = self.get_return_dummy(no_of_steps)
+    def derive_features(self):
+        self.data['Return'] = self.get_return()
+        self.data['ReturnDummy'] = self.get_return_dummy()
 
         
-        self.__data['MA10'] = self.tran_MA(10)
-        self.__data['MA20'] = self.tran_MA(20)
-        self.__data['MA30'] = self.tran_MA(30)
-        self.__data['MA40'] = self.tran_MA(40)
-        self.__data['MA50'] = self.tran_MA(50)
+        self.data['MA10'] = self.tran_MA(10)
+        self.data['MA20'] = self.tran_MA(20)
+        self.data['MA30'] = self.tran_MA(30)
+        self.data['MA40'] = self.tran_MA(40)
+        self.data['MA50'] = self.tran_MA(50)
 
-        self.__data['BB10'] = self.tran_BB(10)
-        self.__data['BB20'] = self.tran_BB(20)
-        self.__data['BB30'] = self.tran_BB(30)
+        self.data['BB10'] = self.tran_BB(10)
+        self.data['BB20'] = self.tran_BB(20)
+        self.data['BB30'] = self.tran_BB(30)
 
-        self.__data['RSI10'] = self.tran_BB(10)
-        self.__data['RSI20'] = self.tran_BB(20)
-        self.__data['RSI30'] = self.tran_BB(30)
+        self.data['RSI10'] = self.tran_BB(10)
+        self.data['RSI20'] = self.tran_BB(20)
+        self.data['RSI30'] = self.tran_BB(30)
 
-        self.__data['STOCHK10'] = self.tran_STOCH_K(window_size_k = 10, window_size_d = 5)
-        self.__data['STOCHK20'] = self.tran_STOCH_K(window_size_k = 20, window_size_d = 5)
-        self.__data['STOCHK30'] = self.tran_STOCH_K(window_size_k = 30, window_size_d = 5)
+        self.data['STOCHK10'] = self.tran_STOCH_K(window_size_k = 10, window_size_d = 5)
+        self.data['STOCHK20'] = self.tran_STOCH_K(window_size_k = 20, window_size_d = 5)
+        self.data['STOCHK30'] = self.tran_STOCH_K(window_size_k = 30, window_size_d = 5)
 
-        self.__data['STOCHKD10'] = self.tran_STOCH_KD(window_size_k = 10, window_size_d = 5)
-        self.__data['STOCHKD20'] = self.tran_STOCH_KD(window_size_k = 20, window_size_d = 5)
-        self.__data['STOCHKD30'] = self.tran_STOCH_KD(window_size_k = 30, window_size_d = 5)
+        self.data['STOCHKD10'] = self.tran_STOCH_KD(window_size_k = 10, window_size_d = 5)
+        self.data['STOCHKD20'] = self.tran_STOCH_KD(window_size_k = 20, window_size_d = 5)
+        self.data['STOCHKD30'] = self.tran_STOCH_KD(window_size_k = 30, window_size_d = 5)
 
         
 
     def visualize(self, columns):
         import matplotlib.pyplot as plt
 
-        self.__data[columns].plot()
+        self.data[columns].plot()
         plt.show()
 
     def talib2df(self, talib_output):
@@ -194,7 +269,7 @@ class Dataset(object):
             ret = pd.DataFrame(talib_output).transpose()
         else:
             ret = pd.Series(talib_output)
-        ret.index = self.__data['Close'].index
+        ret.index = self.data['Close'].index
         return ret;
 
 

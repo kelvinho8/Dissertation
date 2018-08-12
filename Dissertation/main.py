@@ -1,4 +1,6 @@
 
+
+$reset
 $cls
 
 import sys
@@ -7,6 +9,7 @@ sys.path.append(r"C:\Users\Kelvin\CloudStation\MSC COMPUTER SCIENCE\Dissertation
 
 from DB import DB
 from Dataset import Dataset
+from Models import Models
 import matplotlib.pyplot as plt
 
 
@@ -33,9 +36,11 @@ df = db.query_to_dataframe(sql_string = sql)
 df.head(16)
 
 
-dataset = Dataset(data = db.query_to_dataframe(sql_string = sql), no_of_intervals_per_day = 8)
+dataset = Dataset(data = db.query_to_dataframe(sql_string = sql), no_of_intervals_per_day = 8, no_of_steps = 1)
 
-dataset.get_data()
+#dataset.get_data()[1:-1]
+
+dataset.interpolate(method = 'linear')
 
 
 dataset.get_data().head()
@@ -51,7 +56,8 @@ dataset.get_data().head()
 
 
 
-dataset.derive_features(no_of_steps = 1)
+
+dataset.derive_features()
 
 
 
@@ -91,17 +97,118 @@ dataset.derive_features(no_of_steps = 1)
 #plt.show()
 
 
-dataset.data_cleaning()
+dataset.remove_na()
 
-dataset.get_data().tail()
+#dataset.get_data().tail()
 
 dataset.get_data().head()['ReturnDummy'].unique()
 
-dataset.get_data().head()
+#dataset.get_data().head()
 
 dataset.data_splitting(train_start = '2008-01-01', train_end = '2008-12-31', test_start = '2009-01-01', test_end = '2009-12-31')
 
-dataset.get_trainset()
+#dataset.get_train()
 
-dataset.get_testset()
+#dataset.get_test()
+
+dataset.avoid_look_ahead_bias()
+
+dataset.get_train().tail()
+
+dataset.set_X(['MA10', 'MA20', 'MA30', 'MA40', 'MA50', 'BB10', 'BB20', 'BB30', 'RSI10', 'RSI20', 'RSI30', 'STOCHK10', 'STOCHK20', 'STOCHK30', 'STOCHKD10', 'STOCHKD20', 'STOCHKD30'])
+dataset.get_X()
+
+dataset.set_y(['ReturnDummy'])
+dataset.get_y()
+
+dataset.set_X_train()
+dataset.set_y_train()
+
+dataset.set_X_test()
+dataset.set_y_test()
+
+
+dataset.get_X_train().head()
+dataset.get_y_train().head()
+
+dataset.get_X_test().head()
+dataset.get_y_test().head()
+
+dataset.normalization()
+
+
+dataset.get_X_train().head()
+dataset.get_X_test().head()
+
+
+dataset.dimension_reduction(n_components = 3)
+
+
+dataset.get_X_train().head()
+dataset.get_X_test().head()
+
+
+
+
+
+
+
+
+models = Models()
+
+from sklearn.svm import SVC, LinearSVC, NuSVC
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.model_selection import TimeSeriesSplit
+from scipy.stats import randint as sp_randint
+#from sklearn.grid_search import GridSearchCV, RandomizedSearchCV
+
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+
+from sklearn.metrics import confusion_matrix, precision_score, recall_score, accuracy_score, f1_score, precision_recall_fscore_support, classification_report
+from sklearn.utils import column_or_1d
+
+n_splits=3
+
+tscv = TimeSeriesSplit(n_splits)
+
+seed = 0
+n_iter_search = 1
+no_of_features = 3
+
+timeseries_split = TimeSeriesSplit(n_splits=3)
+clf = GridSearchCV(reg, param, cv=timeseries_split, scoring='neg_mean_squared_error')
+
+
+#param_dist = {"max_depth": [3, None],
+#              "min_samples_split": sp_randint(1, no_of_features),
+#              "min_samples_leaf": sp_randint(1, no_of_features)}
+
+#models.add_model(model = RandomizedSearchCV(RandomForestClassifier(random_state=seed)
+#                                                                  , param_distributions=param_dist
+#                                                                  , cv = tscv
+#                                                                  , verbose=5), model_name = 'RandomForest')
+
+param = [{'kernel': ['rbf']
+          ,'gamma': [1e-2, 1e-3, 1e-4, 1e-5]
+          ,'C': [1, 10, 100, 1000]}] 
+
+models.add_model(model = RandomizedSearchCV(SVC(random_state=seed)
+                                            , param_distributions=param
+                                            , cv = tscv), model_name = 'KernelSVM')
+
+models.add_model(model = GaussianNB(), model_name = 'NaiveBayes')
+
+
+
+for model_name, model in models.get_models().items():
+    print(model_name)
+    print(model)
+
+    model.fit(dataset.get_X_train(), column_or_1d(dataset.get_y_train()))
+    y_pred = model.predict(dataset.get_X_test())
+
+    print(accuracy_score(dataset.get_y_test(), y_pred))
+
+
 
