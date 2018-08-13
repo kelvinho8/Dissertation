@@ -149,66 +149,69 @@ dataset.get_X_test().head()
 
 
 
+from ModelsProcessor import ModelsProcessor
+
+seed = 999
+models_processor = ModelsProcessor(seed = seed)
+
+models_processor.get_models().get_models()
+
+models_processor.train_validate_test(X_train=dataset.get_X_train(), y_train=dataset.get_y_train(), X_test=dataset.get_X_test(), y_test=dataset.get_y_test())
+
+
+#models = Models()
+
+#from sklearn.svm import SVC, LinearSVC, NuSVC
+#from sklearn.ensemble import RandomForestClassifier
+#from sklearn.naive_bayes import GaussianNB
+#from sklearn.model_selection import TimeSeriesSplit
+#from scipy.stats import randint as sp_randint
+##from sklearn.grid_search import GridSearchCV, RandomizedSearchCV
+
+#from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+
+#from sklearn.metrics import confusion_matrix, precision_score, recall_score, accuracy_score, f1_score, precision_recall_fscore_support, classification_report
+#from sklearn.utils import column_or_1d
+
+#n_splits=5
+
+#tscv = TimeSeriesSplit(n_splits)
+
+#tscv
+
+#seed = 999
+#n_iter_search = 10
+#no_of_features = 3
 
 
 
+#param = {'kernel': ['rbf']
+#          ,'gamma': [1e-2, 1e-3, 1e-4, 1e-5]
+#          ,'C': [1, 10, 100, 1000]}
 
+#models.add_model(model = RandomizedSearchCV(SVC(random_state=seed)
+#                                            , param_distributions=param
+#                                            , cv = tscv), model_name = 'KernelSVM')
 
-models = Models()
-
-from sklearn.svm import SVC, LinearSVC, NuSVC
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.model_selection import TimeSeriesSplit
-from scipy.stats import randint as sp_randint
-#from sklearn.grid_search import GridSearchCV, RandomizedSearchCV
-
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
-
-from sklearn.metrics import confusion_matrix, precision_score, recall_score, accuracy_score, f1_score, precision_recall_fscore_support, classification_report
-from sklearn.utils import column_or_1d
-
-n_splits=3
-
-tscv = TimeSeriesSplit(n_splits)
-
-seed = 0
-n_iter_search = 1
-no_of_features = 3
-
-timeseries_split = TimeSeriesSplit(n_splits=3)
-clf = GridSearchCV(reg, param, cv=timeseries_split, scoring='neg_mean_squared_error')
-
-
-#param_dist = {"max_depth": [3, None],
-#              "min_samples_split": sp_randint(1, no_of_features),
-#              "min_samples_leaf": sp_randint(1, no_of_features)}
-
-#models.add_model(model = RandomizedSearchCV(RandomForestClassifier(random_state=seed)
-#                                                                  , param_distributions=param_dist
-#                                                                  , cv = tscv
-#                                                                  , verbose=5), model_name = 'RandomForest')
-
-param = [{'kernel': ['rbf']
-          ,'gamma': [1e-2, 1e-3, 1e-4, 1e-5]
-          ,'C': [1, 10, 100, 1000]}] 
-
-models.add_model(model = RandomizedSearchCV(SVC(random_state=seed)
-                                            , param_distributions=param
-                                            , cv = tscv), model_name = 'KernelSVM')
-
-models.add_model(model = GaussianNB(), model_name = 'NaiveBayes')
+##models.add_model(model = GaussianNB(random_state=seed), model_name = 'NaiveBayes')
 
 
 
-for model_name, model in models.get_models().items():
-    print(model_name)
-    print(model)
+#for model_name, model in models.get_models().items():
+#    print(model_name)
+#    print(model)
 
-    model.fit(dataset.get_X_train(), column_or_1d(dataset.get_y_train()))
-    y_pred = model.predict(dataset.get_X_test())
+#    model.fit(dataset.get_X_train(), column_or_1d(dataset.get_y_train()))
+#    y_pred = model.predict(dataset.get_X_test())
 
-    print(accuracy_score(dataset.get_y_test(), y_pred))
+#    print(accuracy_score(dataset.get_y_test(), y_pred))
+#    print(model.best_estimator_)
+#    print(model.best_score_)
+#    print(model.best_params_)
+#    #print(model.cv_results_)
+
+
+
 
 
 
