@@ -45,6 +45,8 @@ dataset.interpolate(method = 'linear')
 
 dataset.get_data().head()
 
+dataset.get_return_dummy()
+
 #dataset.get_data()[['Close', 'Volume']].iloc[:]
 
 
@@ -105,7 +107,7 @@ dataset.get_data().head()['ReturnDummy'].unique()
 
 #dataset.get_data().head()
 
-dataset.data_splitting(train_start = '2008-01-01', train_end = '2008-12-31', test_start = '2009-01-01', test_end = '2009-12-31')
+dataset.data_splitting(train_start = '2009-01-01', train_end = '2009-12-31', test_start = '2010-01-01', test_end = '2010-12-31')
 
 #dataset.get_train()
 
@@ -147,71 +149,57 @@ dataset.dimension_reduction(n_components = 3)
 dataset.get_X_train().head()
 dataset.get_X_test().head()
 
-
+dataset.get_y_train().head()
 
 from ModelsProcessor import ModelsProcessor
 
 seed = 999
-models_processor = ModelsProcessor(seed = seed)
+n_splits = 5
+models_processor = ModelsProcessor(seed = seed, n_splits = n_splits)
 
 models_processor.get_models().get_models()
 
 models_processor.train_validate_test(X_train=dataset.get_X_train(), y_train=dataset.get_y_train(), X_test=dataset.get_X_test(), y_test=dataset.get_y_test())
 
 
-#models = Models()
-
-#from sklearn.svm import SVC, LinearSVC, NuSVC
-#from sklearn.ensemble import RandomForestClassifier
-#from sklearn.naive_bayes import GaussianNB
-#from sklearn.model_selection import TimeSeriesSplit
-#from scipy.stats import randint as sp_randint
-##from sklearn.grid_search import GridSearchCV, RandomizedSearchCV
-
-#from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
-
-#from sklearn.metrics import confusion_matrix, precision_score, recall_score, accuracy_score, f1_score, precision_recall_fscore_support, classification_report
-#from sklearn.utils import column_or_1d
-
-#n_splits=5
-
-#tscv = TimeSeriesSplit(n_splits)
-
-#tscv
-
-#seed = 999
-#n_iter_search = 10
-#no_of_features = 3
-
-
-
-#param = {'kernel': ['rbf']
-#          ,'gamma': [1e-2, 1e-3, 1e-4, 1e-5]
-#          ,'C': [1, 10, 100, 1000]}
-
-#models.add_model(model = RandomizedSearchCV(SVC(random_state=seed)
-#                                            , param_distributions=param
-#                                            , cv = tscv), model_name = 'KernelSVM')
-
-##models.add_model(model = GaussianNB(random_state=seed), model_name = 'NaiveBayes')
-
-
-
-#for model_name, model in models.get_models().items():
-#    print(model_name)
-#    print(model)
-
-#    model.fit(dataset.get_X_train(), column_or_1d(dataset.get_y_train()))
-#    y_pred = model.predict(dataset.get_X_test())
-
-#    print(accuracy_score(dataset.get_y_test(), y_pred))
-#    print(model.best_estimator_)
-#    print(model.best_score_)
-#    print(model.best_params_)
-#    #print(model.cv_results_)
 
 
 
 
 
+
+$reset
+$cls
+
+
+import sys
+sys.path.append(r"C:\Users\Kelvin\CloudStation\MSC COMPUTER SCIENCE\Dissertation\CODE\Dissertation\Dissertation")
+
+from ModelsProcessor import ModelsProcessor
+
+seed = 999
+n_splits = 5
+models_processor = ModelsProcessor(seed = seed, n_splits = n_splits)
+
+
+
+models_processor.set_dataset(no_of_intervals_per_day = 8
+                    , no_of_steps = 30
+                    , interpolation_method = 'linear'
+                    , train_start = '2008-01-01'
+                    , train_end = '2008-12-31'
+                    , test_start = '2009-01-01'
+                    , test_end = '2009-12-31'
+                    , dimensions = 3)
+
+
+models_processor.get_dataset.visualize(columns=['Close'])
+
+
+
+models_processor.get_models().get_models()
+
+#models_processor.train_validate_test(X_train=dataset.get_X_train(), y_train=dataset.get_y_train(), X_test=dataset.get_X_test(), y_test=dataset.get_y_test())
+
+models_processor.train_validate_test()
 

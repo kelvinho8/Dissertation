@@ -26,7 +26,9 @@ class Dataset(object):
 
     def get_return_dummy(self):
         import numpy as np
-        return np.sign(self.data['Close'].pct_change(self.no_of_steps))
+        #return np.sign(self.data['Close'].pct_change(self.no_of_steps))
+
+        return self.data['Close'].pct_change(self.no_of_steps).to_frame().applymap(lambda x: 1 if x > 0 else -1).iloc[:]
 
 
 
