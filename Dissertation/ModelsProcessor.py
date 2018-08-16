@@ -40,8 +40,12 @@ class ModelsProcessor(object):
 
 
     def set_dataset(self
+                    , interval = 30
                     , no_of_intervals_per_day = 8
                     , no_of_steps = 1
+                    , window_size = 10
+                    , window_size_k = 10
+                    , window_size_d = 5
                     , interpolation_method = 'linear'
                     , train_start = '2009-01-01'
                     , train_end = '2009-12-31'
@@ -68,7 +72,7 @@ class ModelsProcessor(object):
             , [Volume]
             FROM [DBHKUDissertation].[dbo].[TableStock]
             where Ticker in ('sh000300')
-            and Interval in (30)
+            and Interval in (""" + str(interval) + """)
 
         """
 
@@ -77,12 +81,13 @@ class ModelsProcessor(object):
         self.dataset = Dataset(data = db.query_to_dataframe(sql_string = sql), no_of_intervals_per_day=no_of_intervals_per_day, no_of_steps=no_of_steps)
         self.dataset.visualize(columns=['Close'])
         self.dataset.interpolate(method = interpolation_method)
-        self.dataset.derive_features()
+        self.dataset.derive_features(window_size, window_size_k, window_size_d)
+        #self.dataset.get_data().head()
         self.dataset.remove_na()
         #dataset.get_data().head()['ReturnDummy'].unique()
         self.dataset.data_splitting(train_start = train_start, train_end = train_end, test_start = test_start, test_end = test_end)
         self.dataset.avoid_look_ahead_bias()
-        self.dataset.set_X(['MA10', 'MA20', 'MA30', 'MA40', 'MA50', 'BB10', 'BB20', 'BB30', 'RSI10', 'RSI20', 'RSI30', 'STOCHK10', 'STOCHK20', 'STOCHK30', 'STOCHKD10', 'STOCHKD20', 'STOCHKD30'])
+        self.dataset.set_X(['MA' + str(window_size), 'MA' + str(window_size * 2), 'MA' + str(window_size * 3), 'MA' + str(window_size * 4), 'MA' + str(window_size * 5), 'BB' + str(window_size), 'BB' + str(window_size * 2), 'BB' + str(window_size * 3), 'RSI' + str(window_size), 'RSI' + str(window_size * 2), 'RSI' + str(window_size * 3), 'STOCHK' + str(window_size_k), 'STOCHK' + str(window_size_k * 2), 'STOCHK' + str(window_size_k * 3), 'STOCHKD' + str(window_size_k), 'STOCHKD' + str(window_size_k * 2), 'STOCHKD' + str(window_size_k * 3)])
         self.dataset.set_y(['ReturnDummy'])
         self.dataset.set_X_train()
         self.dataset.set_y_train()

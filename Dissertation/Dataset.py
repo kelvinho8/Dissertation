@@ -229,33 +229,34 @@ class Dataset(object):
 
 
 
-    def derive_features(self):
+    def derive_features(self, window_size = 10, window_size_k = 10, window_size_d = 5):
         self.data['Return'] = self.get_return()
         self.data['ReturnDummy'] = self.get_return_dummy()
 
         
-        self.data['MA10'] = self.tran_MA(10)
-        self.data['MA20'] = self.tran_MA(20)
-        self.data['MA30'] = self.tran_MA(30)
-        self.data['MA40'] = self.tran_MA(40)
-        self.data['MA50'] = self.tran_MA(50)
+        self.data['MA' + str(window_size)] = self.tran_MA(window_size)
+        self.data['MA' + str(window_size * 2)] = self.tran_MA(window_size * 2)
+        self.data['MA' + str(window_size * 3)] = self.tran_MA(window_size * 3)
+        self.data['MA' + str(window_size * 4)] = self.tran_MA(window_size * 4)
+        self.data['MA' + str(window_size * 5)] = self.tran_MA(window_size * 5)
 
-        self.data['BB10'] = self.tran_BB(10)
-        self.data['BB20'] = self.tran_BB(20)
-        self.data['BB30'] = self.tran_BB(30)
+        self.data['BB' + str(window_size)] = self.tran_BB(window_size)
+        self.data['BB' + str(window_size * 2)] = self.tran_BB(window_size * 2)
+        self.data['BB' + str(window_size * 3)] = self.tran_BB(window_size * 3)
 
-        self.data['RSI10'] = self.tran_BB(10)
-        self.data['RSI20'] = self.tran_BB(20)
-        self.data['RSI30'] = self.tran_BB(30)
+        self.data['RSI' + str(window_size)] = self.tran_BB(window_size)
+        self.data['RSI' + str(window_size * 2)] = self.tran_BB(window_size * 2)
+        self.data['RSI' + str(window_size * 3)] = self.tran_BB(window_size * 3)
 
-        self.data['STOCHK10'] = self.tran_STOCH_K(window_size_k = 10, window_size_d = 5)
-        self.data['STOCHK20'] = self.tran_STOCH_K(window_size_k = 20, window_size_d = 5)
-        self.data['STOCHK30'] = self.tran_STOCH_K(window_size_k = 30, window_size_d = 5)
+        self.data['STOCHK' + str(window_size_k)] = self.tran_STOCH_K(window_size_k = window_size_k, window_size_d = window_size_d)
+        self.data['STOCHK' + str(window_size_k * 2)] = self.tran_STOCH_K(window_size_k = window_size_k * 2, window_size_d = window_size_d)
+        self.data['STOCHK' + str(window_size_k * 3)] = self.tran_STOCH_K(window_size_k = window_size_k * 3, window_size_d = window_size_d)
 
-        self.data['STOCHKD10'] = self.tran_STOCH_KD(window_size_k = 10, window_size_d = 5)
-        self.data['STOCHKD20'] = self.tran_STOCH_KD(window_size_k = 20, window_size_d = 5)
-        self.data['STOCHKD30'] = self.tran_STOCH_KD(window_size_k = 30, window_size_d = 5)
+        self.data['STOCHKD' + str(window_size_k)] = self.tran_STOCH_KD(window_size_k = window_size_k, window_size_d = window_size_d)
+        self.data['STOCHKD' + str(window_size_k * 2)] = self.tran_STOCH_KD(window_size_k = window_size_k * 2, window_size_d = window_size_d)
+        self.data['STOCHKD' + str(window_size_k * 3)] = self.tran_STOCH_KD(window_size_k = window_size_k * 3, window_size_d = window_size_d)
 
+        print(self.data.head())
         
 
     def visualize(self, columns):
