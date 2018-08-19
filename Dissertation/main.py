@@ -3,8 +3,10 @@
 #$reset
 #$cls
 
+
 #import sys
 #sys.path.append(r"C:\Users\Kelvin\CloudStation\MSC COMPUTER SCIENCE\Dissertation\CODE\Dissertation\Dissertation")
+##sys.path.append(r"C:\Users\Kelvi\CloudStation\MSC COMPUTER SCIENCE\Dissertation\CODE\Dissertation\Dissertation")
 
 
 #from DB import DB
@@ -15,6 +17,8 @@
 
 
 #db = DB(driver = '{SQL Server}', server = 'ENVY15-NOTEBOOK\SQL2017', database = 'DBHKUDissertation', username = 'sa', password = 'sa.2017')
+##db = DB(driver = '{SQL Server}', server = 'LAPTOP-194NACED\SQL2017', database = 'DBHKUDissertation', username = 'sa', password = 'sa.2017')
+
 
 #interval = 30
 
@@ -58,7 +62,11 @@
 
 ##dataset.visualize(columns=['Close', 'MA50', 'MA200'])
 
+##dataset.talib2df(dataset.STOCH(window_size = 40)).plot()
+##dataset.talib2df(dataset.STOCH(100, 100, 10)).plot()
+##dataset.get_data()['STOCHKD30'].plot(secondary_y=True)
 
+##plt.show()
 
 
 #dataset.derive_features()
@@ -95,7 +103,7 @@
 
 ##type(tran_bb)
 
-##dataset.talib2df(dataset.STOCH(30, 5)).plot()
+##dataset.talib2df(dataset.STOCH(100)).plot()
 ##dataset.get_data()['STOCHKD30'].plot(secondary_y=True)
 
 ##plt.show()
@@ -164,8 +172,42 @@
 #models_processor.train_validate_test(X_train=dataset.get_X_train(), y_train=dataset.get_y_train(), X_test=dataset.get_X_test(), y_test=dataset.get_y_test())
 
 
+#====================================================================
+
+#models_processor.plot_optimization(interval = 30
+#                                    , min_no_of_steps = 1
+#                                    , max_no_of_steps = 301
+#                                    , no_of_steps_interval = 10
+#                                    , min_window_size = 5
+#                                    , max_window_size = 31
+#                                    , window_size_interval = 5
+#                                    , interpolation_method = 'linear'
+#                                    , train_start = '2009-01-01'
+#                                    , train_end = '2009-12-31'
+#                                    , test_start = '2010-01-01'
+#                                    , test_end = '2010-12-31'
+#                                    , dimensions = 3
+#                                    , model_name = 'Decision Tree')
 
 
+
+#a = [1, 2, 3, 4]
+
+#a
+
+#import numpy as np
+#nda = np.array(a)
+#nda.reshape(nda, shape = (2, 2))
+
+#nda = np.zeros(shape=(2, 2))
+#print(nda)
+
+
+#nda[0, 0]
+
+#a = np.arange(1, 101, 1).T
+
+#print(a)
 
 
 
@@ -176,6 +218,9 @@ $cls
 
 import sys
 sys.path.append(r"C:\Users\Kelvin\CloudStation\MSC COMPUTER SCIENCE\Dissertation\CODE\Dissertation\Dissertation")
+#sys.path.append(r"C:\Users\Kelvi\CloudStation\MSC COMPUTER SCIENCE\Dissertation\CODE\Dissertation\Dissertation")
+
+
 
 from ModelsProcessor import ModelsProcessor
 
@@ -183,11 +228,8 @@ from ModelsProcessor import ModelsProcessor
 models_processor = ModelsProcessor(seed = 999, n_splits = 5)
 
 models_processor.set_dataset(interval = 30
-                    , no_of_intervals_per_day = 240 / 30
-                    , no_of_steps = 30
+                    , no_of_steps = 50
                     , window_size = 5
-                    , window_size_k = 5
-                    , window_size_d = 3
                     , interpolation_method = 'linear'
                     , train_start = '2008-01-01'
                     , train_end = '2008-12-31'
@@ -205,5 +247,44 @@ models_processor.get_models().get_models()
 
 #models_processor.train_validate_test(X_train=dataset.get_X_train(), y_train=dataset.get_y_train(), X_test=dataset.get_X_test(), y_test=dataset.get_y_test())
 
-models_processor.train_validate_test()
+#models_processor.train_validate_test_models()
+models_processor.train_validate_test_model(model_name = 'KNN')
+
+models_processor.get_models().get_models().keys()
+
+
+X, Y, Z, grid_search_df = models_processor.exhaustive_grid_search(interval = 30
+                                    , min_no_of_steps = 5
+                                    , max_no_of_steps = 31
+                                    , no_of_steps_interval = 5
+                                    , min_window_size = 5
+                                    , max_window_size = 31
+                                    , window_size_interval = 5
+                                    , interpolation_method = 'linear'
+                                    , train_start = '2007-01-01'
+                                    , train_end = '2008-12-31'
+                                    , test_start = '2009-01-01'
+                                    , test_end = '2009-12-31'
+                                    , dimensions = 3
+                                    , model_name = 'Decision Tree')
+
+models_processor.to_sql(table_name = 'GridSearchResult', if_exists = 'append')
+models_processor.plot_grid_search(is_saved = 1, save_path = r"C:\Users\Kelvin\CloudStation\MSC COMPUTER SCIENCE\Dissertation\CODE\Dissertation\Dissertation\GridSearchImage")
+
+models_processor.delete_table(sql_string = 'delete [DBHKUDissertation].[dbo].[GridSearchResult]')
+
+
+models_processor.exhaustive_grid_search_models(interval = 30
+                                    , min_no_of_steps = 5
+                                    , max_no_of_steps = 31
+                                    , no_of_steps_interval = 5
+                                    , min_window_size = 5
+                                    , max_window_size = 31
+                                    , window_size_interval = 5
+                                    , interpolation_method = 'linear'
+                                    , train_start = '2009-01-01'
+                                    , train_end = '2009-12-31'
+                                    , test_start = '2010-01-01'
+                                    , test_end = '2010-12-31'
+                                    , dimensions = 3)
 

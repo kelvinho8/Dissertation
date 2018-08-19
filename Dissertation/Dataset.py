@@ -111,7 +111,7 @@ class Dataset(object):
         return (rsi - 50) / 50
 
 
-    def STOCH(self, window_size_k, window_size_d):
+    def STOCH(self, window_size):
         from talib import abstract
 
         input_arrays = {
@@ -124,19 +124,35 @@ class Dataset(object):
             
         #slowk, slowd = STOCH(high, low, close, fastk_period=5, slowk_period=3, slowk_matype=0, slowd_period=3, slowd_matype=0)
 
-        return abstract.STOCH(input_arrays, fastk_period=window_size_k * self.no_of_intervals_per_day, slowk_period=window_size_d * self.no_of_intervals_per_day, slowk_matype=0, slowd_period=window_size_d * self.no_of_intervals_per_day, slowd_matype=0)
+        return abstract.STOCH(input_arrays, fastk_period=window_size * self.no_of_intervals_per_day, slowk_period=window_size * self.no_of_intervals_per_day, slowk_matype=0, slowd_period=window_size * self.no_of_intervals_per_day, slowd_matype=0)
+    
+
+    #def STOCH(self, window_size_fastk, window_size_slowk, window_size_slowd):
+    #    from talib import abstract
+
+    #    input_arrays = {
+    #        'open': self.data['Open'].values,
+    #        'high': self.data['High'].values,
+    #        'low': self.data['Low'].values,
+    #        'close': self.data['Close'].values,
+    #        'volume': self.data['Volume'].values
+    #    }
+            
+    #    #slowk, slowd = STOCH(high, low, close, fastk_period=5, slowk_period=3, slowk_matype=0, slowd_period=3, slowd_matype=0)
+
+    #    return abstract.STOCH(input_arrays, fastk_period=window_size_fastk * self.no_of_intervals_per_day, slowk_period=window_size_slowk * self.no_of_intervals_per_day, slowk_matype=0, slowd_period=window_size_slowd * self.no_of_intervals_per_day, slowd_matype=0)
     
 
 
-    def tran_STOCH_K(self, window_size_k, window_size_d):
+    def tran_STOCH_K(self, window_size):
         
-        slowk, slowd = self.STOCH(window_size_k, window_size_d)
+        slowk, slowd = self.STOCH(window_size)
 
         return (slowk - 50) / 50
 
-    def tran_STOCH_KD(self, window_size_k, window_size_d):
+    def tran_STOCH_KD(self, window_size):
         
-        slowk, slowd = self.STOCH(window_size_k, window_size_d)
+        slowk, slowd = self.STOCH(window_size)
 
         return ((slowk - slowd) - 50) / 50
 
@@ -229,7 +245,7 @@ class Dataset(object):
 
 
 
-    def derive_features(self, window_size = 10, window_size_k = 10, window_size_d = 5):
+    def derive_features(self, window_size = 10):
         self.data['Return'] = self.get_return()
         self.data['ReturnDummy'] = self.get_return_dummy()
 
@@ -248,15 +264,15 @@ class Dataset(object):
         self.data['RSI' + str(window_size * 2)] = self.tran_BB(window_size * 2)
         self.data['RSI' + str(window_size * 3)] = self.tran_BB(window_size * 3)
 
-        self.data['STOCHK' + str(window_size_k)] = self.tran_STOCH_K(window_size_k = window_size_k, window_size_d = window_size_d)
-        self.data['STOCHK' + str(window_size_k * 2)] = self.tran_STOCH_K(window_size_k = window_size_k * 2, window_size_d = window_size_d)
-        self.data['STOCHK' + str(window_size_k * 3)] = self.tran_STOCH_K(window_size_k = window_size_k * 3, window_size_d = window_size_d)
+        self.data['STOCHK' + str(window_size)] = self.tran_STOCH_K(window_size = window_size)
+        self.data['STOCHK' + str(window_size * 2)] = self.tran_STOCH_K(window_size = window_size * 2)
+        self.data['STOCHK' + str(window_size * 3)] = self.tran_STOCH_K(window_size = window_size * 3)
 
-        self.data['STOCHKD' + str(window_size_k)] = self.tran_STOCH_KD(window_size_k = window_size_k, window_size_d = window_size_d)
-        self.data['STOCHKD' + str(window_size_k * 2)] = self.tran_STOCH_KD(window_size_k = window_size_k * 2, window_size_d = window_size_d)
-        self.data['STOCHKD' + str(window_size_k * 3)] = self.tran_STOCH_KD(window_size_k = window_size_k * 3, window_size_d = window_size_d)
+        self.data['STOCHKD' + str(window_size)] = self.tran_STOCH_KD(window_size = window_size)
+        self.data['STOCHKD' + str(window_size * 2)] = self.tran_STOCH_KD(window_size = window_size * 2)
+        self.data['STOCHKD' + str(window_size * 3)] = self.tran_STOCH_KD(window_size = window_size * 3)
 
-        print(self.data.head())
+        #print(self.data.head())
         
 
     def visualize(self, columns):
