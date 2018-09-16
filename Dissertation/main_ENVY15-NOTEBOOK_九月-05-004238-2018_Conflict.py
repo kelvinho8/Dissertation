@@ -221,36 +221,21 @@ sys.path.append(r"C:\Users\Kelvin\CloudStation\MSC COMPUTER SCIENCE\Dissertation
 #sys.path.append(r"C:\Users\Kelvi\CloudStation\MSC COMPUTER SCIENCE\Dissertation\CODE\Dissertation\Dissertation")
 
 
-from Backtester import Backtester 
 
-backtester = Backtester(interval = 1)
-
-backtester.run_algorithm()
+from ModelsProcessor import ModelsProcessor
 
 
-
-#from ModelsProcessor import ModelsProcessor
-from Processor import Processor
-
-
-models_processor = Processor(seed = 999, n_splits = 5)
+models_processor = ModelsProcessor(seed = 999, n_splits = 5)
 
 models_processor.set_dataset(interval = 15
                     , no_of_steps = 300
                     , window_size = 100
                     , interpolation_method = 'linear'
-                    , train_start = '2009-01-01'
-                    , train_end = '2009-12-31'
-                    , valid_start = '2010-01-01'
-                    , valid_end = '2010-12-31'
-                    , test_start = '2011-01-01'
-                    , test_end = '2011-12-31'
+                    , train_start = '2008-01-01'
+                    , train_end = '2008-12-31'
+                    , test_start = '2009-01-01'
+                    , test_end = '2009-12-31'
                     , dimensions = 3)
-
-models_processor.get_dataset().visualize('Close')
-
-#type(models_processor.get_dataset().get_X_train_start_date())
-#models_processor.get_dataset().get_y_test_true()
 
 #models_processor.get_dataset().get_X_train().head()
 #models_processor.get_dataset().get_X_train().tail()
@@ -278,20 +263,18 @@ models_processor.train_validate_test_model(model_name = 'KNN')
 models_processor.get_models().get_models().keys()
 
 
-X, Y, train_accuracy, train_F1, train_precision, train_recall, train_tn, train_fp, train_fn, train_tp, valid_accuracy, valid_F1, valid_precision, valid_recall, valid_tn, valid_fp, valid_fn, valid_tp, test_accuracy, test_F1, test_precision, test_recall, test_tn, test_fp, test_fn, test_tp, grid_search_df = models_processor.exhaustive_grid_search(interval = 15
+X, Y, accuracy, F1, precision, recall, tn, fp, fn, tp, grid_search_df = models_processor.exhaustive_grid_search(interval = 15
                                                                         , min_no_of_steps = 5
                                                                         , max_no_of_steps = 30
                                                                         , no_of_steps_interval = 5
                                                                         , min_window_size = 5
-                                                                        , max_window_size = 20
+                                                                        , max_window_size = 10
                                                                         , window_size_interval = 5
                                                                         , interpolation_method = 'linear'
-                                                                        , train_start = '2009-01-01'
-                                                                        , train_end = '2009-12-31'
-                                                                        , valid_start = '2010-01-01'
-                                                                        , valid_end = '2010-12-31'
-                                                                        , test_start = '2011-01-01'
-                                                                        , test_end = '2011-12-31'
+                                                                        , train_start = '2008-01-01'
+                                                                        , train_end = '2008-12-31'
+                                                                        , test_start = '2009-01-01'
+                                                                        , test_end = '2009-12-31'
                                                                         , dimensions = 3
                                                                         , model_name = 'RBF SVM')
 
@@ -301,13 +284,6 @@ models_processor.delete_table(sql_string = 'delete [DBHKUDissertation].[dbo].[Gr
 models_processor.to_sql(table_name = 'GridSearchResult', if_exists = 'replace')
 #models_processor.plot_grid_search(is_saved = 0, save_path = r"C:\Users\Kelvin\CloudStation\MSC COMPUTER SCIENCE\Dissertation\CODE\Dissertation\Dissertation\GridSearchImage")
 models_processor.plot_grid_search(is_saved = 0, save_path = r"C:\Users\Kelvi\CloudStation\MSC COMPUTER SCIENCE\Dissertation\CODE\Dissertation\Dissertation\GridSearchImage")
-
-
-
-
-
-
-
 
 models_processor.delete_table(sql_string = 'delete [DBHKUDissertation].[dbo].[GridSearchResult]')
 
@@ -353,9 +329,9 @@ import datetime
 
 
 
-for incremental_year in range(2, 3):
+for incremental_year in range(3, 4):
     print(incremental_year)
-
+        
     models_processor.exhaustive_grid_search_models(interval = 15
                                         , min_no_of_steps = 10
                                         , max_no_of_steps = 500
@@ -366,10 +342,8 @@ for incremental_year in range(2, 3):
                                         , interpolation_method = 'linear'
                                         , train_start = (datetime.datetime.strptime('2007-01-01', '%Y-%m-%d').date() + relativedelta(years=incremental_year)).strftime("%Y-%m-%d")
                                         , train_end = (datetime.datetime.strptime('2007-12-31', '%Y-%m-%d').date() + relativedelta(years=incremental_year)).strftime("%Y-%m-%d")
-                                        , valid_start = (datetime.datetime.strptime('2008-01-01', '%Y-%m-%d').date() + relativedelta(years=incremental_year)).strftime("%Y-%m-%d")
-                                        , valid_end = (datetime.datetime.strptime('2008-12-31', '%Y-%m-%d').date() + relativedelta(years=incremental_year)).strftime("%Y-%m-%d")
-                                        , test_start = (datetime.datetime.strptime('2009-01-01', '%Y-%m-%d').date() + relativedelta(years=incremental_year)).strftime("%Y-%m-%d")
-                                        , test_end = (datetime.datetime.strptime('2009-12-31', '%Y-%m-%d').date() + relativedelta(years=incremental_year)).strftime("%Y-%m-%d")
+                                        , test_start = (datetime.datetime.strptime('2008-01-01', '%Y-%m-%d').date() + relativedelta(years=incremental_year)).strftime("%Y-%m-%d")
+                                        , test_end = (datetime.datetime.strptime('2008-12-31', '%Y-%m-%d').date() + relativedelta(years=incremental_year)).strftime("%Y-%m-%d")
                                         , dimensions = 3)
 
 

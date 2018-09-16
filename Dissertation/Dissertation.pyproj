@@ -21,6 +21,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Backtester.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Dataset.py">
       <SubType>Code</SubType>
     </Compile>
@@ -32,6 +35,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ModelsProcessor.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Processor.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

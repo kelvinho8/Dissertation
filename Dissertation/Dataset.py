@@ -28,8 +28,7 @@ class Dataset(object):
         import numpy as np
         #return np.sign(self.data['Close'].pct_change(self.no_of_steps))
 
-        return self.data['Close'].pct_change(self.no_of_steps).to_frame().applymap(lambda x: 1 if x > 0 else -1).iloc[:]
-
+        return self.data['Close'].pct_change(self.no_of_steps).to_frame().applymap(lambda x: 1 if x > 0 else 0).iloc[:]
 
 
     def MA(self, window_size):
@@ -44,7 +43,7 @@ class Dataset(object):
         }
 
         return abstract.SMA(input_arrays, timeperiod=window_size * self.no_of_intervals_per_day)
-
+        #return abstract.SMA(input_arrays, timeperiod=window_size)
 
     def tran_MA(self, window_size):
         close = self.data['Close'].values
@@ -65,8 +64,9 @@ class Dataset(object):
             'volume': self.data['Volume'].values
         }
 
-        return abstract.BBANDS(input_arrays, timeperiod=window_size, nbdevup=2, nbdevdn=2, matype=0)
-
+        return abstract.BBANDS(input_arrays, timeperiod=window_size * self.no_of_intervals_per_day, nbdevup=2, nbdevdn=2, matype=0)
+        #return abstract.BBANDS(input_arrays, timeperiod=window_size, nbdevup=2, nbdevdn=2, matype=0)
+        
 
     def tran_BB(self, window_size):
         import numpy as np
@@ -101,7 +101,7 @@ class Dataset(object):
         }
 
         return abstract.RSI(input_arrays, timeperiod=window_size * self.no_of_intervals_per_day)
-
+        #return abstract.RSI(input_arrays, timeperiod=window_size)
 
 
     def tran_RSI(self, window_size):
@@ -123,8 +123,10 @@ class Dataset(object):
         }
             
         #slowk, slowd = STOCH(high, low, close, fastk_period=5, slowk_period=3, slowk_matype=0, slowd_period=3, slowd_matype=0)
-
-        return abstract.STOCH(input_arrays, fastk_period=window_size * self.no_of_intervals_per_day, slowk_period=window_size * self.no_of_intervals_per_day, slowk_matype=0, slowd_period=window_size * self.no_of_intervals_per_day, slowd_matype=0)
+        #return abstract.STOCH(input_arrays, fastk_period=window_size * self.no_of_intervals_per_day, slowk_period=window_size * self.no_of_intervals_per_day, slowk_matype=0, slowd_period=window_size * self.no_of_intervals_per_day, slowd_matype=0)
+    
+        return abstract.STOCH(input_arrays, fastk_period=window_size * self.no_of_intervals_per_day, slowk_period=3 * self.no_of_intervals_per_day, slowk_matype=0, slowd_period=3 * self.no_of_intervals_per_day, slowd_matype=0)
+        #return abstract.STOCH(input_arrays, fastk_period=window_size, slowk_period=window_size, slowk_matype=0, slowd_period=window_size, slowd_matype=0)
     
 
     #def STOCH(self, window_size_fastk, window_size_slowk, window_size_slowd):
@@ -164,12 +166,16 @@ class Dataset(object):
         self.data.interpolate(method, inplace = True)
 
 
-    def data_splitting(self, train_start, train_end, test_start, test_end):
+    def data_splitting(self, train_start, train_end, valid_start, valid_end, test_start, test_end):
         self.train = self.data[train_start:train_end]
+        self.valid = self.data[valid_start:valid_end]
         self.test = self.data[test_start:test_end]
 
     def get_train(self):
         return self.train
+
+    def get_valid(self):
+        return self.valid
 
     def get_test(self):
         return self.test
@@ -196,6 +202,12 @@ class Dataset(object):
     def set_y_train(self):
         self.y_train = self.train[self.y]
 
+    def set_X_valid(self):
+        self.X_valid = self.valid[self.X]
+
+    def set_y_valid(self):
+        self.y_valid = self.valid[self.y]
+
     def set_X_test(self):
         self.X_test = self.test[self.X]
 
@@ -210,11 +222,80 @@ class Dataset(object):
     def get_y_train(self):
         return self.y_train
     
+    def get_X_valid(self):
+        return self.X_valid
+
+    def get_y_valid(self):
+        return self.y_valid
+    
     def get_X_test(self):
         return self.X_test
 
     def get_y_test(self):
         return self.y_test
+
+
+    
+    def get_y_train_true(self):
+        return self.y_train.sum()
+
+    def get_y_train_false(self):
+        return self.y_train.count() - self.y_train.sum()
+
+    def get_y_train_ratio(self):
+        return self.y_train.sum() * 1.0 / self.y_train.count()
+
+
+    def get_y_valid_true(self):
+        return self.y_valid.sum()
+
+    def get_y_valid_false(self):
+        return self.y_valid.count() - self.y_valid.sum()
+
+    def get_y_valid_ratio(self):
+        return self.y_valid.sum() * 1.0 / self.y_valid.count()
+
+
+    def get_y_test_true(self):
+        return self.y_test.sum()
+
+    def get_y_test_false(self):
+        return self.y_test.count() - self.y_test.sum()
+
+    def get_y_test_ratio(self):
+        return self.y_test.sum() * 1.0 / self.y_test.count()
+
+
+
+    def get_X_train_start_date(self):
+        return self.X_train.index[0]
+    
+    def get_X_train_end_date(self):
+        return self.X_train.index[-1]
+
+    def get_X_valid_start_date(self):
+        return self.X_valid.index[0]
+    
+    def get_X_valid_end_date(self):
+        return self.X_valid.index[-1]
+
+
+    def get_X_test_start_date(self):
+        return self.X_test.index[0]
+
+    def get_X_test_end_date(self):
+        return self.X_test.index[-1]
+
+
+
+    def print_train_test_period(self):        
+        print(self.X_train.index[0], self.X_train.index[-1], self.X_valid.index[0], self.X_valid.index[-1], self.X_test.index[0], self.X_test.index[-1])
+        print('ValidRatio = {}, Y_Valid.True = {}, T_Valid.False = {}\n'.format(self.get_y_valid_ratio(), self.get_y_valid_true(), self.get_y_valid_false()))
+        print('TestRatio = {}, Y_Test.True = {}, T_Test.False = {}\n'.format(self.get_y_test_ratio(), self.get_y_test_true(), self.get_y_test_false()))
+
+    #def print_train_test_period(self):        
+    #    return print(self.X_train.index[0], self.X_train.index[-1], self.X_test.index[0], self.X_test.index[-1])
+
 
 
     def normalization(self):
@@ -224,8 +305,8 @@ class Dataset(object):
         scaler = preprocessing.StandardScaler().fit(self.X_train)
 
         self.X_train = pd.DataFrame(data = scaler.transform(self.X_train), columns = self.X, index = self.train.index)
+        self.X_valid = pd.DataFrame(data = scaler.transform(self.X_valid), columns = self.X, index = self.valid.index)
         self.X_test =  pd.DataFrame(data = scaler.transform(self.X_test), columns = self.X, index = self.test.index)
-
 
 
     def dimension_reduction(self, n_components=2):
@@ -240,6 +321,7 @@ class Dataset(object):
         print(np.sum(pca.explained_variance_ratio_))
 
         self.X_train = pd.DataFrame(data = pca.transform(self.X_train), index = self.train.index)
+        self.X_valid =  pd.DataFrame(data = pca.transform(self.X_valid), index = self.valid.index)
         self.X_test =  pd.DataFrame(data = pca.transform(self.X_test), index = self.test.index)
 
 
@@ -253,8 +335,8 @@ class Dataset(object):
         self.data['MA' + str(window_size)] = self.tran_MA(window_size)
         self.data['MA' + str(window_size * 2)] = self.tran_MA(window_size * 2)
         self.data['MA' + str(window_size * 3)] = self.tran_MA(window_size * 3)
-        self.data['MA' + str(window_size * 4)] = self.tran_MA(window_size * 4)
-        self.data['MA' + str(window_size * 5)] = self.tran_MA(window_size * 5)
+        #self.data['MA' + str(window_size * 4)] = self.tran_MA(window_size * 4)
+        #self.data['MA' + str(window_size * 5)] = self.tran_MA(window_size * 5)
 
         self.data['BB' + str(window_size)] = self.tran_BB(window_size)
         self.data['BB' + str(window_size * 2)] = self.tran_BB(window_size * 2)
